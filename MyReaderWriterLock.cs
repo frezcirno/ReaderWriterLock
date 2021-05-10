@@ -45,9 +45,13 @@ namespace ReaderWriterLock
         {
             lock (_rwLock)
             {
-                // 读者数量--，唤醒等待的线程
+                // 读者数量--
                 _readerNumber--;
-                Monitor.PulseAll(_rwLock);
+
+                // 若所有读者线程都结束了，唤醒一个正在等待的写线程
+                if (_readerNumber == 0 && _writerWaitingNumber > 0) {
+                    Monitor.Pulse(_rwLock);
+                }
             }
         }
 
